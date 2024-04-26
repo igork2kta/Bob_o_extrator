@@ -60,6 +60,7 @@ namespace Bob_o_extrator
             {
                 DialogResult response = MessageBox.Show($"Arquivo {filePath} já existe! Deseja substituir?", "Atenção!", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (response == DialogResult.No) return;
+                else File.Delete(filePath);
             }
 
             using (StreamWriter streamWriter = new StreamWriter(filePath, true, Encoding.UTF8))
