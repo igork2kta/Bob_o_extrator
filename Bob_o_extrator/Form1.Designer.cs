@@ -34,6 +34,12 @@
             label1 = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             dataGridView = new System.Windows.Forms.DataGridView();
+            dataGridViewCheckBoxColumn1 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            banco = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            usuario = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            senha = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            schema = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            nomeArquivo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             exportar = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             executar = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             bt_exportar = new System.Windows.Forms.Button();
@@ -49,12 +55,7 @@
             bt_outputPath = new System.Windows.Forms.Button();
             tb_outputPath = new System.Windows.Forms.TextBox();
             label4 = new System.Windows.Forms.Label();
-            dataGridViewCheckBoxColumn1 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            banco = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            usuario = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            senha = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            schema = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            nomeArquivo = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            cb_script_temporario = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)dataGridView).BeginInit();
             SuspendLayout();
             // 
@@ -105,6 +106,38 @@
             dataGridView.CellEnter += dataGridView_CellEnter;
             dataGridView.CellMouseDoubleClick += dataGridView_CellMouseDoubleClick;
             dataGridView.ColumnHeaderMouseDoubleClick += dataGridView_ColumnHeaderMouseDoubleClick;
+            // 
+            // dataGridViewCheckBoxColumn1
+            // 
+            dataGridViewCheckBoxColumn1.HeaderText = "EXECUTAR";
+            dataGridViewCheckBoxColumn1.Name = "dataGridViewCheckBoxColumn1";
+            // 
+            // banco
+            // 
+            banco.HeaderText = "BANCO";
+            banco.Name = "banco";
+            banco.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            // 
+            // usuario
+            // 
+            usuario.HeaderText = "USUARIO";
+            usuario.Name = "usuario";
+            // 
+            // senha
+            // 
+            senha.HeaderText = "SENHA";
+            senha.Name = "senha";
+            // 
+            // schema
+            // 
+            schema.HeaderText = "SCHEMA";
+            schema.Name = "schema";
+            // 
+            // nomeArquivo
+            // 
+            nomeArquivo.HeaderText = "NOME ARQUIVO";
+            nomeArquivo.Name = "nomeArquivo";
+            nomeArquivo.Width = 370;
             // 
             // exportar
             // 
@@ -237,6 +270,7 @@
             tb_outputPath.Name = "tb_outputPath";
             tb_outputPath.Size = new System.Drawing.Size(839, 23);
             tb_outputPath.TabIndex = 22;
+            tb_outputPath.TextChanged += tb_outputPath_TextChanged;
             tb_outputPath.DoubleClick += tb_outputPath_DoubleClick;
             // 
             // label4
@@ -249,43 +283,23 @@
             label4.TabIndex = 21;
             label4.Text = "Path saída:";
             // 
-            // dataGridViewCheckBoxColumn1
+            // cb_script_temporario
             // 
-            dataGridViewCheckBoxColumn1.HeaderText = "EXECUTAR";
-            dataGridViewCheckBoxColumn1.Name = "dataGridViewCheckBoxColumn1";
-            // 
-            // banco
-            // 
-            banco.HeaderText = "BANCO";
-            banco.Name = "banco";
-            banco.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            // 
-            // usuario
-            // 
-            usuario.HeaderText = "USUARIO";
-            usuario.Name = "usuario";
-            // 
-            // senha
-            // 
-            senha.HeaderText = "SENHA";
-            senha.Name = "senha";
-            // 
-            // schema
-            // 
-            schema.HeaderText = "SCHEMA";
-            schema.Name = "schema";
-            // 
-            // nomeArquivo
-            // 
-            nomeArquivo.HeaderText = "NOME ARQUIVO";
-            nomeArquivo.Name = "nomeArquivo";
-            nomeArquivo.Width = 370;
+            cb_script_temporario.AutoSize = true;
+            cb_script_temporario.Location = new System.Drawing.Point(594, 438);
+            cb_script_temporario.Name = "cb_script_temporario";
+            cb_script_temporario.Size = new System.Drawing.Size(119, 19);
+            cb_script_temporario.TabIndex = 25;
+            cb_script_temporario.Text = "Script Temporário";
+            cb_script_temporario.UseVisualStyleBackColor = true;
+            cb_script_temporario.CheckedChanged += cb_script_temporario_CheckedChanged;
             // 
             // Form1
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(968, 470);
+            Controls.Add(cb_script_temporario);
             Controls.Add(bt_outputPath);
             Controls.Add(tb_outputPath);
             Controls.Add(label4);
@@ -340,5 +354,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn senha;
         private System.Windows.Forms.DataGridViewTextBoxColumn schema;
         private System.Windows.Forms.DataGridViewTextBoxColumn nomeArquivo;
+        private System.Windows.Forms.CheckBox cb_script_temporario;
     }
 }

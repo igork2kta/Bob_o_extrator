@@ -11,6 +11,7 @@ namespace Bob_o_extrator
     public partial class Form1 : Form
     {
         bool extracting = false;
+        readonly string pathScriptTemporario = AppDomain.CurrentDomain.BaseDirectory + "Temp\\scriptTemporario.txt";
         public Form1()
         {
             InitializeComponent();
@@ -18,6 +19,7 @@ namespace Bob_o_extrator
             tb_scriptPath.Text = Properties.Settings.Default.LastScriptPath;
             tb_outputPath.Text = Properties.Settings.Default.LastOutputPath;
             setLblHelp();
+            ApagarScriptTemp();
         }
 
         private void bt_exportar_Click(object sender, EventArgs e)
@@ -168,6 +170,16 @@ namespace Bob_o_extrator
 
         private void bt_outputPath_Click(object sender, EventArgs e)
         {
+            SalvarOutputPath();
+        }
+
+        private void tb_outputPath_TextChanged(object sender, EventArgs e)
+        {
+            SalvarOutputPath();
+        }
+
+        private void SalvarOutputPath()
+        {
             FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
             folderBrowserDialog.ShowDialog();
             if (!string.IsNullOrEmpty(folderBrowserDialog.SelectedPath))
@@ -176,7 +188,6 @@ namespace Bob_o_extrator
                 Properties.Settings.Default.LastOutputPath = tb_outputPath.Text;
                 Properties.Settings.Default.Save();
             }
-
         }
 
         private async void bt_executar_Click(object sender, EventArgs e)
@@ -200,7 +211,14 @@ namespace Bob_o_extrator
                 return;
             }
 
-            string query = File.ReadAllText(tb_scriptPath.Text);
+            string query;
+
+            if (cb_script_temporario.Checked)
+                query = File.ReadAllText(pathScriptTemporario);
+
+            else
+                query = File.ReadAllText(tb_scriptPath.Text);
+
             //Remove o ponto e vírgula se tiver
             query = Sql.RemoveSemicolon(query);
 
@@ -277,6 +295,25 @@ namespace Bob_o_extrator
         }
 
 
+        private void ApagarScriptTemp()
+        {
+            if (File.Exists(pathScriptTemporario))
+                File.Delete(pathScriptTemporario);
+        }
 
+        private void cb_script_temporario_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cb_script_temporario.Checked)
+            {
+                if (!Directory.Exists(Path.GetDirectoryName(pathScriptTemporario)))
+                    Directory.CreateDirectory(Path.GetDirectoryName(pathScriptTemporario));
+
+
+                if (!File.Exists(pathScriptTemporario))
+                    File.Create(pathScriptTemporario).Close();
+
+                Process.Start("explorer.exe", pathScriptTemporario);
+            }
+        }
     }
 }

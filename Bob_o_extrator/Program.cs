@@ -3,8 +3,8 @@ using System.Reflection;
 using System.Windows.Forms;
 
 
-[assembly: AssemblyVersion("1.1.2")]
-[assembly: AssemblyMetadata("BuildDate", "2024-04-24")]
+[assembly: AssemblyVersion("1.2.1")]
+[assembly: AssemblyMetadata("BuildDate", "2024-04-26")]
 namespace Bob_o_extrator
 {
     internal static class Program
