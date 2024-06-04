@@ -15,8 +15,8 @@ namespace Bob_o_extrator
         {
             List<string> ocorrencias = new List<string>();
 
-            // Define a expressão regular para encontrar o texto entre ":" e " "
-            Regex regex = new Regex(@":([^:\s]+)\s?");
+            // Define a expressão regular para encontrar o texto entre ":" e " " e ignorar caso esteja entre aspas simples (obrigado chat gpt)
+            Regex regex = new Regex(@"(?<!'):(?![^']*')([^:\s]+)\s?");
 
             // Encontra todas as correspondências na entrada
             MatchCollection matches = regex.Matches(query);
