@@ -62,14 +62,16 @@ namespace Bob_o_extrator
                 if (response == DialogResult.No) return;
                 else File.Delete(filePath);
             }
-
-            using (StreamWriter streamWriter = new StreamWriter(filePath, true, Encoding.UTF8))
+            //Mesmo encoding sql developer
+            Encoding iso = Encoding.GetEncoding("iso-8859-1");
+            //Encoding.UTF8
+            using (StreamWriter streamWriter = new StreamWriter(filePath, true, iso))
             {
                 StringBuilder sb = new StringBuilder();
 
                 // Escrever cabeçalho (nomes das colunas)
                 foreach (DataColumn column in dataTable.Columns)
-                    sb.Append('"' + column.ColumnName + '"' + ";");
+                    sb.Append($"\"{column.ColumnName}\";");
 
                 sb.AppendLine();
 
@@ -77,14 +79,14 @@ namespace Bob_o_extrator
                 foreach (DataRow row in dataTable.Rows)
                 {
                     foreach (var item in row.ItemArray)
-                        sb.Append('"' + item.ToString() + '"' + ";");
+                        sb.Append(string.IsNullOrEmpty(item.ToString()) ? ";" : $"\"{item}\";");
 
                     sb.AppendLine();
                 }
                 if (!string.IsNullOrEmpty(query))
                 {
                     sb.AppendLine();
-                    sb.AppendLine('"' + query + '"' + ";");
+                    sb.AppendLine($"\"{query}\";");
                 }
 
                 streamWriter.Write(sb.ToString());
@@ -121,6 +123,7 @@ namespace Bob_o_extrator
             }
             catch (Exception exception)
             {
+                MessageBox.Show(exception.Message, "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
 

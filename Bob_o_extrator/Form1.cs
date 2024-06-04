@@ -170,16 +170,6 @@ namespace Bob_o_extrator
 
         private void bt_outputPath_Click(object sender, EventArgs e)
         {
-            SalvarOutputPath();
-        }
-
-        private void tb_outputPath_TextChanged(object sender, EventArgs e)
-        {
-            SalvarOutputPath();
-        }
-
-        private void SalvarOutputPath()
-        {
             FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog();
             folderBrowserDialog.ShowDialog();
             if (!string.IsNullOrEmpty(folderBrowserDialog.SelectedPath))
@@ -188,6 +178,12 @@ namespace Bob_o_extrator
                 Properties.Settings.Default.LastOutputPath = tb_outputPath.Text;
                 Properties.Settings.Default.Save();
             }
+        }
+
+        private void tb_outputPath_TextChanged(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.LastOutputPath = tb_outputPath.Text;
+            Properties.Settings.Default.Save();
         }
 
         private async void bt_executar_Click(object sender, EventArgs e)
@@ -205,11 +201,7 @@ namespace Bob_o_extrator
                 return;
             }
 
-            if (!File.Exists(tb_scriptPath.Text))
-            {
-                MessageBox.Show($"Script {tb_scriptPath.Text} não encontrado!", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
+
 
             string query;
 
@@ -217,7 +209,15 @@ namespace Bob_o_extrator
                 query = File.ReadAllText(pathScriptTemporario);
 
             else
+            {
+                if (!File.Exists(tb_scriptPath.Text))
+                {
+                    MessageBox.Show($"Script {tb_scriptPath.Text} não encontrado!", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
                 query = File.ReadAllText(tb_scriptPath.Text);
+            }
+
 
             //Remove o ponto e vírgula se tiver
             query = Sql.RemoveSemicolon(query);
