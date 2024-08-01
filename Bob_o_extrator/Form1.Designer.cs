@@ -56,6 +56,7 @@
             tb_outputPath = new System.Windows.Forms.TextBox();
             label4 = new System.Windows.Forms.Label();
             cb_script_temporario = new System.Windows.Forms.CheckBox();
+            bt_altera_modo = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)dataGridView).BeginInit();
             SuspendLayout();
             // 
@@ -294,11 +295,22 @@
             cb_script_temporario.UseVisualStyleBackColor = true;
             cb_script_temporario.CheckedChanged += cb_script_temporario_CheckedChanged;
             // 
+            // bt_altera_modo
+            // 
+            bt_altera_modo.Location = new System.Drawing.Point(812, 12);
+            bt_altera_modo.Name = "bt_altera_modo";
+            bt_altera_modo.Size = new System.Drawing.Size(118, 23);
+            bt_altera_modo.TabIndex = 26;
+            bt_altera_modo.Text = "Bob o extrator";
+            bt_altera_modo.UseVisualStyleBackColor = true;
+            bt_altera_modo.Click += bt_altera_modo_Click;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(968, 470);
+            Controls.Add(bt_altera_modo);
             Controls.Add(cb_script_temporario);
             Controls.Add(bt_outputPath);
             Controls.Add(tb_outputPath);
@@ -355,5 +367,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn schema;
         private System.Windows.Forms.DataGridViewTextBoxColumn nomeArquivo;
         private System.Windows.Forms.CheckBox cb_script_temporario;
+        private System.Windows.Forms.Button bt_altera_modo;
     }
 }

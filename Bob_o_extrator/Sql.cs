@@ -5,10 +5,16 @@ namespace Bob_o_extrator
 {
     public static class Sql
     {
-        public static string RemoveSemicolon(string query)
+        public static void RemoveSemicolon(ref string query)
         {
-            if (query.LastIndexOf(";") < 1) return query;
-            return query.Remove(query.LastIndexOf(";"), 1);
+            if (query.LastIndexOf(";") < 1) return;
+            query = query.Remove(query.LastIndexOf(";"), 1);
+        }
+
+        public static string[] SplitSql(string query)
+        {
+            return query.Split(";");
+
         }
 
         public static List<string> GetParameters(string query)

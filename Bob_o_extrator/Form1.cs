@@ -12,6 +12,7 @@ namespace Bob_o_extrator
     {
         bool extracting = false;
         readonly string pathScriptTemporario = AppDomain.CurrentDomain.BaseDirectory + "Temp\\scriptTemporario.txt";
+        bool BobOExecutor = false;
         public Form1()
         {
             InitializeComponent();
@@ -40,23 +41,19 @@ namespace Bob_o_extrator
 
         static DataTable ExtractDataTableFromDataGridView(DataGridView dataGridView)
         {
-
             DataTable dataTable = new DataTable();
 
             // Adicionar colunas ao DataTable
             foreach (DataGridViewColumn column in dataGridView.Columns)
-            {
                 dataTable.Columns.Add(column.HeaderText);
-            }
 
             // Adicionar linhas ao DataTable
             foreach (DataGridViewRow row in dataGridView.Rows)
             {
                 DataRow dataRow = dataTable.NewRow();
                 for (int i = 0; i < dataGridView.Columns.Count; i++)
-                {
                     dataRow[i] = row.Cells[i].Value;
-                }
+
                 dataTable.Rows.Add(dataRow);
             }
 
@@ -190,7 +187,6 @@ namespace Bob_o_extrator
         {
             //Chama o método em forma de task para que a interface continue respondendo durante a extração
             await Task.Run(() => { Executar_Extracao(); });
-
         }
 
         private void Executar_Extracao()
@@ -200,10 +196,8 @@ namespace Bob_o_extrator
                 MessageBox.Show("Já existe uma extração em andamento, favor aguardar.", "Aguarde...", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
-
-
-
             string query;
+            string[] queryMulti;
 
             if (cb_script_temporario.Checked)
                 query = File.ReadAllText(pathScriptTemporario);
@@ -219,8 +213,10 @@ namespace Bob_o_extrator
             }
 
 
-            //Remove o ponto e vírgula se tiver
-            query = Sql.RemoveSemicolon(query);
+            queryMulti = Sql.SplitSql(query);
+
+            //Remove o ponto e vírgula do final se tiver
+            Sql.RemoveSemicolon(ref query);
 
             ParametersForm parametersForm = new ParametersForm(query);
             parametersForm.ShowDialog();
@@ -244,11 +240,17 @@ namespace Bob_o_extrator
                 string user = dataGridView.Rows[i].Cells[2].Value.ToString();
                 string password = dataGridView.Rows[i].Cells[3].Value.ToString();
                 string session = dataGridView.Rows[i].Cells[4].Value.ToString();
-                string path = tb_outputPath.Text + "\\" + dataGridView.Rows[i].Cells[5].Value.ToString();
 
+                if (BobOExecutor)
+                {
+                    tasks[j] = Task.Run(() => DataAcess.Execute(serviceName, user, password, session, queryMulti));
+                }
+                else
+                {
+                    string path = tb_outputPath.Text + "\\" + dataGridView.Rows[i].Cells[5].Value.ToString();
+                    tasks[j] = Task.Run(() => DataAcess.Export(serviceName, user, password, session, path, query));
+                }
 
-
-                tasks[j] = Task.Run(() => DataAcess.Export(serviceName, user, password, session, path, query));
                 j++;
 
             }
@@ -313,6 +315,21 @@ namespace Bob_o_extrator
                     File.Create(pathScriptTemporario).Close();
 
                 Process.Start("explorer.exe", pathScriptTemporario);
+            }
+        }
+
+        private void bt_altera_modo_Click(object sender, EventArgs e)
+        {
+            if (!BobOExecutor)
+            {
+                bt_altera_modo.Text = "Bob o EXECUTOR";
+                BobOExecutor = true;
+            }
+            else
+            {
+
+                bt_altera_modo.Text = "Bob o extrator";
+                BobOExecutor = false;
             }
         }
     }
