@@ -5,10 +5,22 @@ namespace Bob_o_extrator
 {
     public static class Sql
     {
-        public static void RemoveSemicolon(ref string query)
+        public static void CleanQuery(ref string query)
         {
+            /*
             if (query.LastIndexOf(";") < 1) return;
             query = query.Remove(query.LastIndexOf(";"), 1);
+            */
+
+            // Remove comentários de linha única (--)
+            query = Regex.Replace(query, @"--.*", string.Empty);
+
+            // Remove comentários de bloco (/* ... */)
+            query = Regex.Replace(query, @"/\*.*?\*/", string.Empty, RegexOptions.Singleline);
+
+            // Remove ponto e vírgula no final da consulta, se houver
+            query = Regex.Replace(query.Trim(), @";\s*$", string.Empty);
+
         }
 
         public static string[] SplitSql(string query)

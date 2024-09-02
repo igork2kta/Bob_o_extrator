@@ -1,6 +1,6 @@
 ﻿namespace Bob_o_extrator
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             tb_usuario = new System.Windows.Forms.TextBox();
             tb_senha = new System.Windows.Forms.TextBox();
             label1 = new System.Windows.Forms.Label();
@@ -57,6 +57,9 @@
             label4 = new System.Windows.Forms.Label();
             cb_script_temporario = new System.Windows.Forms.CheckBox();
             bt_altera_modo = new System.Windows.Forms.Button();
+            tb_nomeArquivos = new System.Windows.Forms.TextBox();
+            label5 = new System.Windows.Forms.Label();
+            bt_aplicarNomeArquivos = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)dataGridView).BeginInit();
             SuspendLayout();
             // 
@@ -236,6 +239,7 @@
             // 
             // lbl_status
             // 
+            lbl_status.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
             lbl_status.AutoSize = true;
             lbl_status.Location = new System.Drawing.Point(93, 439);
             lbl_status.Name = "lbl_status";
@@ -245,7 +249,7 @@
             // 
             // lbl_help
             // 
-            lbl_help.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            lbl_help.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
             lbl_help.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             lbl_help.Image = Properties.Resources.HelpTableOfContents;
             lbl_help.Location = new System.Drawing.Point(945, 3);
@@ -286,6 +290,7 @@
             // 
             // cb_script_temporario
             // 
+            cb_script_temporario.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             cb_script_temporario.AutoSize = true;
             cb_script_temporario.Location = new System.Drawing.Point(594, 438);
             cb_script_temporario.Name = "cb_script_temporario";
@@ -297,19 +302,49 @@
             // 
             // bt_altera_modo
             // 
-            bt_altera_modo.Location = new System.Drawing.Point(812, 12);
+            bt_altera_modo.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            bt_altera_modo.Location = new System.Drawing.Point(832, 3);
             bt_altera_modo.Name = "bt_altera_modo";
-            bt_altera_modo.Size = new System.Drawing.Size(118, 23);
+            bt_altera_modo.Size = new System.Drawing.Size(107, 23);
             bt_altera_modo.TabIndex = 26;
             bt_altera_modo.Text = "Bob o extrator";
             bt_altera_modo.UseVisualStyleBackColor = true;
             bt_altera_modo.Click += bt_altera_modo_Click;
             // 
-            // Form1
+            // tb_nomeArquivos
+            // 
+            tb_nomeArquivos.Location = new System.Drawing.Point(576, 12);
+            tb_nomeArquivos.Name = "tb_nomeArquivos";
+            tb_nomeArquivos.Size = new System.Drawing.Size(106, 23);
+            tb_nomeArquivos.TabIndex = 27;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new System.Drawing.Point(480, 16);
+            label5.Name = "label5";
+            label5.Size = new System.Drawing.Size(90, 15);
+            label5.TabIndex = 28;
+            label5.Text = "Nome Arquivos";
+            // 
+            // bt_aplicarNomeArquivos
+            // 
+            bt_aplicarNomeArquivos.Location = new System.Drawing.Point(688, 11);
+            bt_aplicarNomeArquivos.Name = "bt_aplicarNomeArquivos";
+            bt_aplicarNomeArquivos.Size = new System.Drawing.Size(112, 23);
+            bt_aplicarNomeArquivos.TabIndex = 29;
+            bt_aplicarNomeArquivos.Text = "Aplicar em todos";
+            bt_aplicarNomeArquivos.UseVisualStyleBackColor = true;
+            bt_aplicarNomeArquivos.Click += bt_aplicarNomeArquivos_Click;
+            // 
+            // MainForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(968, 470);
+            Controls.Add(bt_aplicarNomeArquivos);
+            Controls.Add(label5);
+            Controls.Add(tb_nomeArquivos);
             Controls.Add(bt_altera_modo);
             Controls.Add(cb_script_temporario);
             Controls.Add(bt_outputPath);
@@ -331,7 +366,7 @@
             Controls.Add(tb_senha);
             Controls.Add(tb_usuario);
             Icon = (System.Drawing.Icon)resources.GetObject("$this.Icon");
-            Name = "Form1";
+            Name = "MainForm";
             Text = "Bob o Extrator";
             ((System.ComponentModel.ISupportInitialize)dataGridView).EndInit();
             ResumeLayout(false);
@@ -368,5 +403,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn nomeArquivo;
         private System.Windows.Forms.CheckBox cb_script_temporario;
         private System.Windows.Forms.Button bt_altera_modo;
+        private System.Windows.Forms.TextBox tb_nomeArquivos;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button bt_aplicarNomeArquivos;
     }
 }

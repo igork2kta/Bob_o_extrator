@@ -8,12 +8,12 @@ using System.Windows.Forms;
 
 namespace Bob_o_extrator
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
         bool extracting = false;
         readonly string pathScriptTemporario = AppDomain.CurrentDomain.BaseDirectory + "Temp\\scriptTemporario.txt";
         bool BobOExecutor = false;
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
             Import(Properties.Settings.Default.LastImportPath);
@@ -31,11 +31,14 @@ namespace Bob_o_extrator
 
         private void setLblHelp()
         {
-            System.Windows.Forms.ToolTip toolTip = new System.Windows.Forms.ToolTip();
+            ToolTip toolTip = new ToolTip();
             // Obter a data de criação do arquivo do assembly
-            DateTime creationDate = File.GetCreationTime(Assembly.GetExecutingAssembly().Location);
+            DateTime creationDate = File.GetLastWriteTime(Assembly.GetExecutingAssembly().Location);
 
-            string helpText = $"Versão {Assembly.GetEntryAssembly().GetName().Version} \nData de compilação: {creationDate}";
+            string helpText = "Bob o Extrator: Execute uma extração de dados em várias bases de uma só vez!";
+            helpText += "\nBob o Executor: Execute vários scripts em sequência separados por ';' em várias bases ao mesmo tempo!";
+            //Versão, está no Program.cs
+            helpText += $"\nVersão {Assembly.GetEntryAssembly().GetName().Version} \nData de compilação: {creationDate}";
             toolTip.SetToolTip(lbl_help, helpText);
         }
 
@@ -82,6 +85,7 @@ namespace Bob_o_extrator
 
             Properties.Settings.Default.LastImportPath = path;
             Properties.Settings.Default.Save();
+
             bool executar;
             string banco, usuario, senha, schema, pathExtracao;
             for (int i = 0; i < dataTable.Rows.Count; i++)
@@ -107,9 +111,21 @@ namespace Bob_o_extrator
         {
             foreach (DataGridViewRow row in dataGridView.Rows)
             {
+                if (row.Index == dataGridView.RowCount - 1) return;
                 row.Cells[2].Value = tb_usuario.Text;
                 row.Cells[3].Value = tb_senha.Text;
             }
+        }
+
+        private void bt_aplicarNomeArquivos_Click(object sender, EventArgs e)
+        {
+            foreach (DataGridViewRow row in dataGridView.Rows)
+            {
+                if (row.Index == dataGridView.RowCount - 1) return;
+                row.Cells[5].Value += tb_nomeArquivos.Text;
+            }
+
+
         }
 
         private void bt_limpar_Click(object sender, EventArgs e)
@@ -196,6 +212,7 @@ namespace Bob_o_extrator
                 MessageBox.Show("Já existe uma extração em andamento, favor aguardar.", "Aguarde...", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
+
             string query;
             string[] queryMulti;
 
@@ -212,12 +229,13 @@ namespace Bob_o_extrator
                 query = File.ReadAllText(tb_scriptPath.Text);
             }
 
-
+            //Bob o executor, pode execultar multiplas querys
             queryMulti = Sql.SplitSql(query);
 
             //Remove o ponto e vírgula do final se tiver
-            Sql.RemoveSemicolon(ref query);
+            Sql.CleanQuery(ref query);
 
+            //Exibe o formulario de parâmetros, caso hajam
             ParametersForm parametersForm = new ParametersForm(query);
             parametersForm.ShowDialog();
             if (!parametersForm.confirmado) return;
@@ -276,21 +294,20 @@ namespace Bob_o_extrator
         }
 
         private void tb_outputPath_DoubleClick(object sender, EventArgs e)
-        {
-            Process.Start("explorer.exe", tb_outputPath.Text);
-        }
+            => Process.Start("explorer.exe", tb_outputPath.Text);
+
 
         private void tb_scriptPath_DoubleClick(object sender, EventArgs e)
-        {
-            Process.Start("explorer.exe", tb_scriptPath.Text);
-        }
+            => Process.Start("explorer.exe", tb_scriptPath.Text);
+
+
 
         private void dataGridView_CellEnter(object sender, DataGridViewCellEventArgs e)
         {
             // Verifica se a célula atual é uma célula de texto
             if (dataGridView[e.ColumnIndex, e.RowIndex] is DataGridViewTextBoxCell)
             {
-                // Desmarca a seleção do texto na célula
+                // Desmarca a seleção do texto na célula para não selecionar todo o texto sempre que entrar no campo
                 dataGridView.BeginEdit(false);
                 ((TextBox)dataGridView.EditingControl).SelectionLength = 0;
             }
@@ -324,13 +341,17 @@ namespace Bob_o_extrator
             {
                 bt_altera_modo.Text = "Bob o EXECUTOR";
                 BobOExecutor = true;
+                this.Text = "Bob o EXECUTOR";
+
             }
             else
             {
-
-                bt_altera_modo.Text = "Bob o extrator";
+                bt_altera_modo.Text = "Bob o Extrator";
                 BobOExecutor = false;
+                this.Text = "Bob o Extrator";
             }
         }
+
+
     }
 }

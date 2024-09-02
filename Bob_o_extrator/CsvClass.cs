@@ -13,11 +13,8 @@ namespace Bob_o_extrator
         {
             try
             {
-
                 string ext = Path.GetExtension(filePath);
                 if (string.IsNullOrEmpty(ext)) filePath += ".csv";
-
-
 
                 // Escrever os dados do DataTable no arquivo CSV usando StreamWriter
                 using (StreamWriter streamWriter = new StreamWriter(filePath))
@@ -48,23 +45,27 @@ namespace Bob_o_extrator
 
         public static void WriteDataTableToCsv(DataTable dataTable, string filePath, string query = null)
         {
+            //Se a variavel path estiver vazia, retorna
             if (string.IsNullOrEmpty(filePath)) return;
 
+            //Tratamento se o diretorio existe ou não
             if (!Directory.Exists(new FileInfo(filePath).Directory.FullName))
                 Directory.CreateDirectory(new FileInfo(filePath).Directory.FullName);
 
-            string ext = Path.GetExtension(filePath);
-            if (string.IsNullOrEmpty(ext)) filePath += ".csv";
+            //Verifica se a extensão foi incluida no path
+            if (string.IsNullOrEmpty(Path.GetExtension(filePath))) filePath += ".csv";
 
+            //Se o arquivo ja existe, pergunta se deseja substituir
             if (File.Exists(filePath))
             {
                 DialogResult response = MessageBox.Show($"Arquivo {filePath} já existe! Deseja substituir?", "Atenção!", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (response == DialogResult.No) return;
                 else File.Delete(filePath);
             }
+
             //Mesmo encoding sql developer
             Encoding iso = Encoding.GetEncoding("iso-8859-1");
-            //Encoding.UTF8
+
             using (StreamWriter streamWriter = new StreamWriter(filePath, true, iso))
             {
                 StringBuilder sb = new StringBuilder();
@@ -83,6 +84,8 @@ namespace Bob_o_extrator
 
                     sb.AppendLine();
                 }
+
+                //Grava a query no final do arquivo 
                 if (!string.IsNullOrEmpty(query))
                 {
                     sb.AppendLine();

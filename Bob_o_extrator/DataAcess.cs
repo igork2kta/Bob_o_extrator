@@ -37,6 +37,9 @@ namespace Bob_o_extrator
                 Password = password
             };
 
+
+
+
             // Estabelecer a conexão com o banco de dados Oracle
             using (OracleConnection connection = new OracleConnection(connectionStringBuilder.ConnectionString))
             {
@@ -56,10 +59,13 @@ namespace Bob_o_extrator
                     {
                         using (OracleDataReader reader = command.ExecuteReader())
                         {
+
                             DataTable dataTable = new DataTable();
+
                             dataTable.Load(reader);
                             GravaLog.Gravar($"Base: {serviceName}. Criando arquivo CSV.");
                             CsvClass.WriteDataTableToCsv(dataTable, path, query);
+
                             GravaLog.Gravar($"Base: {serviceName}. Extração finalizada.\n{dataTable.Rows.Count} Linhas extraídas.");
 
                             if (dataTable.Rows.Count == 0)
