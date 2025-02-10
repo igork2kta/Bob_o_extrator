@@ -60,6 +60,7 @@
             tb_nomeArquivos = new System.Windows.Forms.TextBox();
             label5 = new System.Windows.Forms.Label();
             bt_aplicarNomeArquivos = new System.Windows.Forms.Button();
+            cb_extracaoLoop = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)dataGridView).BeginInit();
             SuspendLayout();
             // 
@@ -337,11 +338,22 @@
             bt_aplicarNomeArquivos.UseVisualStyleBackColor = true;
             bt_aplicarNomeArquivos.Click += bt_aplicarNomeArquivos_Click;
             // 
+            // cb_extracaoLoop
+            // 
+            cb_extracaoLoop.AutoSize = true;
+            cb_extracaoLoop.Location = new System.Drawing.Point(467, 438);
+            cb_extracaoLoop.Name = "cb_extracaoLoop";
+            cb_extracaoLoop.Size = new System.Drawing.Size(121, 19);
+            cb_extracaoLoop.TabIndex = 30;
+            cb_extracaoLoop.Text = "Extração em Loop";
+            cb_extracaoLoop.UseVisualStyleBackColor = true;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             ClientSize = new System.Drawing.Size(968, 470);
+            Controls.Add(cb_extracaoLoop);
             Controls.Add(bt_aplicarNomeArquivos);
             Controls.Add(label5);
             Controls.Add(tb_nomeArquivos);
@@ -406,5 +418,6 @@
         private System.Windows.Forms.TextBox tb_nomeArquivos;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button bt_aplicarNomeArquivos;
+        private System.Windows.Forms.CheckBox cb_extracaoLoop;
     }
 }

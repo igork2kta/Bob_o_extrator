@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
@@ -37,6 +38,8 @@ namespace Bob_o_extrator
 
             string helpText = "Bob o Extrator: Execute uma extração de dados em várias bases de uma só vez!";
             helpText += "\nBob o Executor: Execute vários scripts em sequência separados por ';' em várias bases ao mesmo tempo!";
+            helpText += "\nUtilize \":\" para definir parâmetros!";
+            helpText += "\nNa extração em loop é possível executar a mesma query com parâmetros diferentes!";
             //Versão, está no Program.cs
             helpText += $"\nVersão {Assembly.GetEntryAssembly().GetName().Version} \nData de compilação: {creationDate}";
             toolTip.SetToolTip(lbl_help, helpText);
@@ -215,7 +218,7 @@ namespace Bob_o_extrator
 
             string query;
             string[] queryMulti;
-
+            Dictionary<string, string> querysLoop = new Dictionary<string, string>(); ;
             if (cb_script_temporario.Checked)
                 query = File.ReadAllText(pathScriptTemporario);
 
@@ -235,16 +238,37 @@ namespace Bob_o_extrator
             //Remove o ponto e vírgula do final se tiver
             Sql.CleanQuery(ref query);
 
-            //Exibe o formulario de parâmetros, caso hajam
-            ParametersForm parametersForm = new ParametersForm(query);
-            parametersForm.ShowDialog();
-            if (!parametersForm.confirmado) return;
 
-            query = parametersForm.query;
+            if (cb_extracaoLoop.Checked)
+            {
+                ExecucaoEmLoopForm loopForm = new ExecucaoEmLoopForm(query);
+                loopForm.ShowDialog();
+                if (!loopForm.confirmado) return;
+                querysLoop = loopForm.querys;
+            }
+            else
+            {
+                //Exibe o formulario de parâmetros, caso hajam
+                ParametersForm parametersForm = new ParametersForm(query);
+                parametersForm.ShowDialog();
+                if (!parametersForm.confirmado) return;
+
+                query = parametersForm.query;
+            }
+
 
             int count = 0;
             foreach (DataGridViewRow row in dataGridView.Rows)
-                if (Convert.ToBoolean(row.Cells[0].Value)) count++;
+            {
+                if (Convert.ToBoolean(row.Cells[0].Value))
+                {
+                    if (cb_extracaoLoop.Checked)
+                        count += querysLoop.Count;
+                    else
+                        count++;
+                }
+            }
+                
 
             Task[] tasks = new Task[count];
             SetStatus("Executando, por favor aguarde...");
@@ -259,17 +283,32 @@ namespace Bob_o_extrator
                 string password = dataGridView.Rows[i].Cells[3].Value.ToString();
                 string session = dataGridView.Rows[i].Cells[4].Value.ToString();
 
-                if (BobOExecutor)
+                if (cb_extracaoLoop.Checked)
                 {
-                    tasks[j] = Task.Run(() => DataAcess.Execute(serviceName, user, password, session, queryMulti));
+                    foreach (var loop in querysLoop)
+                    {
+                        
+                        string path = tb_outputPath.Text + "\\" + dataGridView.Rows[i].Cells[5].Value.ToString() + loop.Key;
+                        tasks[j] = Task.Run(() => DataAcess.Export(serviceName, user, password, session, path, loop.Value));
+         
+                        j++;
+                    }
                 }
                 else
                 {
-                    string path = tb_outputPath.Text + "\\" + dataGridView.Rows[i].Cells[5].Value.ToString();
-                    tasks[j] = Task.Run(() => DataAcess.Export(serviceName, user, password, session, path, query));
-                }
 
-                j++;
+                    if (BobOExecutor)
+                    {
+                        tasks[j] = Task.Run(() => DataAcess.Execute(serviceName, user, password, session, queryMulti));
+                    }
+                    else
+                    {
+                        string path = tb_outputPath.Text + "\\" + dataGridView.Rows[i].Cells[5].Value.ToString();
+                        tasks[j] = Task.Run(() => DataAcess.Export(serviceName, user, password, session, path, query));
+                    }
+                    j++;
+                }
+                
 
             }
 
@@ -279,6 +318,7 @@ namespace Bob_o_extrator
             SetStatus("Pronto!");
             extracting = false;
         }
+
 
 
         //Método para alterar o status mesmo fora da thread principal
