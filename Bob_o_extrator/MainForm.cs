@@ -17,11 +17,13 @@ namespace Bob_o_extrator
         public MainForm()
         {
             InitializeComponent();
-            Import(Properties.Settings.Default.LastImportPath);
-            tb_scriptPath.Text = Properties.Settings.Default.LastScriptPath;
-            tb_outputPath.Text = Properties.Settings.Default.LastOutputPath;
             setLblHelp();
+            showNovidades(true);
             ApagarScriptTemp();
+            Import(ConfigManager.LastImportPath);
+            tb_scriptPath.Text = ConfigManager.LastScriptPath;
+            tb_outputPath.Text = ConfigManager.LastOutputPath;
+            
         }
 
         private void bt_exportar_Click(object sender, EventArgs e)
@@ -40,9 +42,37 @@ namespace Bob_o_extrator
             helpText += "\nBob o Executor: Execute vários scripts em sequência separados por ';' em várias bases ao mesmo tempo!";
             helpText += "\nUtilize \":\" para definir parâmetros!";
             helpText += "\nNa extração em loop é possível executar a mesma query com parâmetros diferentes!";
+            helpText += "\nExtração por linha de comando: Execute via CMD passando os parâmetros -> BANCO, USUARIO, SENHA, SESSION, PATH SAÍDA, PATH QUERY";
             //Versão, está no Program.cs
             helpText += $"\nVersão {Assembly.GetEntryAssembly().GetName().Version} \nData de compilação: {creationDate}";
             toolTip.SetToolTip(lbl_help, helpText);
+        }
+
+        private void showNovidades(bool show = false)
+        {
+            if (!show) return;
+
+            string versaoAtual = Assembly.GetEntryAssembly().GetName().Version.ToString();         
+            int firstDotIndex = versaoAtual.IndexOf('.');// Encontrar a posição do primeiro ponto
+            int secondDotIndex = versaoAtual.IndexOf('.', firstDotIndex + 1);// Encontrar a posição do segundo ponto
+            versaoAtual = versaoAtual.Substring(0, secondDotIndex); ;
+
+            string versaoArquivo = "";
+            if (!string.IsNullOrEmpty(ConfigManager.Versao))
+            {
+                versaoArquivo = ConfigManager.Versao;
+                firstDotIndex = versaoArquivo.IndexOf('.');// Encontrar a posição do primeiro ponto
+                secondDotIndex = versaoArquivo.IndexOf('.', firstDotIndex + 1);// Encontrar a posição do segundo ponto
+                versaoArquivo = versaoArquivo.Substring(0, secondDotIndex); ;
+            }
+            
+
+            if (versaoArquivo != versaoAtual)
+            {
+                string novidadesText = "Ágora é possível extrair via linha de comando!\nExecute o Bob o Extrator via CMD passando os parâmetros -> BANCO, USUARIO, SENHA, SESSION, PATH SAÍDA, PATH QUERY";
+                MessageBox.Show(novidadesText, "Novidades!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+            
         }
 
         static DataTable ExtractDataTableFromDataGridView(DataGridView dataGridView)
@@ -86,8 +116,8 @@ namespace Bob_o_extrator
 
             dataGridView.Rows.Clear();
 
-            Properties.Settings.Default.LastImportPath = path;
-            Properties.Settings.Default.Save();
+            ConfigManager.LastImportPath = path;
+            ConfigManager.Save();
 
             bool executar;
             string banco, usuario, senha, schema, pathExtracao;
@@ -180,8 +210,8 @@ namespace Bob_o_extrator
         private void bt_scriptPath_Click(object sender, EventArgs e)
         {
             tb_scriptPath.Text = CsvClass.OpenFile();
-            Properties.Settings.Default.LastScriptPath = tb_scriptPath.Text;
-            Properties.Settings.Default.Save();
+            ConfigManager.LastScriptPath = tb_scriptPath.Text;
+            ConfigManager.Save();
         }
 
         private void bt_outputPath_Click(object sender, EventArgs e)
@@ -191,15 +221,15 @@ namespace Bob_o_extrator
             if (!string.IsNullOrEmpty(folderBrowserDialog.SelectedPath))
             {
                 tb_outputPath.Text = folderBrowserDialog.SelectedPath;
-                Properties.Settings.Default.LastOutputPath = tb_outputPath.Text;
-                Properties.Settings.Default.Save();
+                ConfigManager.LastOutputPath = tb_outputPath.Text;
+                ConfigManager.Save();
             }
         }
 
         private void tb_outputPath_TextChanged(object sender, EventArgs e)
         {
-            Properties.Settings.Default.LastOutputPath = tb_outputPath.Text;
-            Properties.Settings.Default.Save();
+            ConfigManager.LastOutputPath = tb_outputPath.Text;
+            ConfigManager.Save();
         }
 
         private async void bt_executar_Click(object sender, EventArgs e)

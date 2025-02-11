@@ -1,5 +1,8 @@
+using Microsoft.VisualBasic.ApplicationServices;
 using System;
+using System.IO;
 using System.Windows.Forms;
+using static System.Collections.Specialized.BitVector32;
 
 
 //[assembly: AssemblyVersion("1.4.0")]
@@ -12,7 +15,7 @@ namespace Bob_o_extrator
         ///  The main entry point for the application.
         /// </summary>
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
 
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
@@ -39,8 +42,25 @@ namespace Bob_o_extrator
 
             }
 
+            if (args.Length > 0)
+            {
+                //Console.WriteLine("Parâmetros recebidos:");
+                foreach (var arg in args)
+                {
+                    //Console.WriteLine(arg);
+                }
 
-            Application.Run(new MainForm());
+                //BANCO, USUARIO, SENHA, SESSION, PATH, PATH QUERY
+                string query = File.ReadAllText(args[5]);
+
+                DataAcess.Export(args[0], args[1], args[2], args[3], args[4], query);
+            }
+            else
+            {
+                ConfigManager.Load();
+                Application.Run(new MainForm());
+            }
+               
         }
     }
 }
