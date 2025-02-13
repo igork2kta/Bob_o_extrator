@@ -1,4 +1,4 @@
-using Microsoft.VisualBasic.ApplicationServices;
+//using Microsoft.VisualBasic.ApplicationServices;
 using System;
 using System.IO;
 using System.Windows.Forms;
@@ -44,12 +44,7 @@ namespace Bob_o_extrator
 
             if (args.Length > 0)
             {
-                //Console.WriteLine("Parâmetros recebidos:");
-                foreach (var arg in args)
-                {
-                    //Console.WriteLine(arg);
-                }
-
+            
                 //BANCO, USUARIO, SENHA, SESSION, PATH, PATH QUERY
                 string query = File.ReadAllText(args[5]);
 

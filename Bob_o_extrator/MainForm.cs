@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -52,20 +53,16 @@ namespace Bob_o_extrator
         {
             if (!show) return;
 
-            string versaoAtual = Assembly.GetEntryAssembly().GetName().Version.ToString();         
-            int firstDotIndex = versaoAtual.IndexOf('.');// Encontrar a posição do primeiro ponto
-            int secondDotIndex = versaoAtual.IndexOf('.', firstDotIndex + 1);// Encontrar a posição do segundo ponto
-            versaoAtual = versaoAtual.Substring(0, secondDotIndex); ;
+            //Obter a versão até o segundo ponto, desconsiderar bug fixes
+            string versaoAtual = Assembly.GetEntryAssembly().GetName().Version.ToString();
+            versaoAtual = string.Join(".", versaoAtual.Split('.').Take(2));
 
             string versaoArquivo = "";
             if (!string.IsNullOrEmpty(ConfigManager.Versao))
             {
                 versaoArquivo = ConfigManager.Versao;
-                firstDotIndex = versaoArquivo.IndexOf('.');// Encontrar a posição do primeiro ponto
-                secondDotIndex = versaoArquivo.IndexOf('.', firstDotIndex + 1);// Encontrar a posição do segundo ponto
-                versaoArquivo = versaoArquivo.Substring(0, secondDotIndex); ;
+                versaoArquivo = string.Join(".", versaoArquivo.Split('.').Take(2));
             }
-            
 
             if (versaoArquivo != versaoAtual)
             {
@@ -249,6 +246,7 @@ namespace Bob_o_extrator
             string query;
             string[] queryMulti;
             Dictionary<string, string> querysLoop = new Dictionary<string, string>(); ;
+
             if (cb_script_temporario.Checked)
                 query = File.ReadAllText(pathScriptTemporario);
 

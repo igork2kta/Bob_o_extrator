@@ -43,7 +43,7 @@ namespace Bob_o_extrator
             }
         }
 
-        public static void WriteDataTableToCsv(DataTable dataTable, string filePath, string query = null)
+        public static void WriteDataTableToCsvOld2(DataTable dataTable, string filePath, string query = null)
         {
             //Se a variavel path estiver vazia, retorna
             if (string.IsNullOrEmpty(filePath)) return;
@@ -95,6 +95,58 @@ namespace Bob_o_extrator
                 streamWriter.Write(sb.ToString());
             }
         }
+
+        public static void WriteDataTableToCsv(DataTable dataTable, string filePath, string query = null)
+        {
+            // Verifica se o caminho do arquivo está vazio
+            if (string.IsNullOrEmpty(filePath)) return;
+
+            //Tratamento se o diretorio existe ou não
+            if (!Directory.Exists(new FileInfo(filePath).Directory.FullName))
+                Directory.CreateDirectory(new FileInfo(filePath).Directory.FullName);
+
+            // Verifica se a extensão .csv foi fornecida, se não, adiciona
+            if (string.IsNullOrEmpty(Path.GetExtension(filePath))) filePath += ".csv";
+
+            // Se o arquivo já existir, pergunta se deseja substituir
+            if (File.Exists(filePath))
+            {
+                var response = MessageBox.Show($"Arquivo {filePath} já existe! Deseja substituir?", "Atenção!", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (response == DialogResult.No) return;
+                else File.Delete(filePath);
+            }
+
+            // Define o encoding como ISO-8859-1
+            Encoding iso = Encoding.GetEncoding("iso-8859-1");
+
+            using (StreamWriter streamWriter = new StreamWriter(filePath, false, iso))
+            {
+                // Escrever cabeçalho (nomes das colunas)
+                StringBuilder sb = new StringBuilder();
+                foreach (DataColumn column in dataTable.Columns)
+                {
+                    sb.Append($"\"{column.ColumnName}\";");
+                }
+                streamWriter.WriteLine(sb.ToString().TrimEnd(';')); // Remover o último ponto e vírgula
+
+                // Escrever os dados das linhas
+                foreach (DataRow row in dataTable.Rows)
+                {
+                    sb.Clear();
+                    foreach (var item in row.ItemArray)
+                    {
+                        sb.Append(string.IsNullOrEmpty(item.ToString()) ? ";" : $"\"{item}\";");
+                    }
+                    streamWriter.WriteLine(sb.ToString().TrimEnd(';')); // Remover o último ponto e vírgula
+                }
+
+                // Se houver uma query, adiciona no final do arquivo
+                if (!string.IsNullOrEmpty(query))
+                    streamWriter.WriteLine($"\"{query}\";");
+                
+            }
+        }
+
 
         public static DataTable ReadCsvToDataTable(string filePath)
         {
