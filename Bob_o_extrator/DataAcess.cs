@@ -50,7 +50,11 @@ namespace Bob_o_extrator
                     //Altera o session e formato de dada antes de executar a consulta
                     using (OracleCommand command = new OracleCommand(alterSession + session, connection))
                     {
-                        command.ExecuteNonQuery();
+                        if (!string.IsNullOrEmpty(session))
+                        {
+                            command.CommandText = alterSession + session;
+                            command.ExecuteNonQuery();
+                        }
                         command.CommandText = nls_date_format;
                         command.ExecuteNonQuery();
                     }

@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Microsoft.VisualBasic.ApplicationServices;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Diagnostics;
 using System.IO;
@@ -12,9 +14,10 @@ namespace Bob_o_extrator
 {
     public partial class MainForm : Form
     {
-        bool extracting = false;
+        bool Extracting = false;
         readonly string pathScriptTemporario = AppDomain.CurrentDomain.BaseDirectory + "Temp\\scriptTemporario.txt";
         bool BobOExecutor = false;
+        
         public MainForm()
         {
             InitializeComponent();
@@ -69,12 +72,11 @@ namespace Bob_o_extrator
                 string novidadesText = "Ágora é possível extrair via linha de comando!\nExecute o Bob o Extrator via CMD passando os parâmetros -> BANCO, USUARIO, SENHA, SESSION, PATH SAÍDA, PATH QUERY";
                 MessageBox.Show(novidadesText, "Novidades!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
-            
         }
 
         static DataTable ExtractDataTableFromDataGridView(DataGridView dataGridView)
         {
-            DataTable dataTable = new DataTable();
+            DataTable dataTable = new();
 
             // Adicionar colunas ao DataTable
             foreach (DataGridViewColumn column in dataGridView.Columns)
@@ -195,6 +197,7 @@ namespace Bob_o_extrator
 
         private void dataGridView_ColumnHeaderMouseDoubleClick(object sender, DataGridViewCellMouseEventArgs e)
         {
+            //Marcar/Desmarcar todos
             if (e.ColumnIndex == 0)
             {
                 bool marcar = !Convert.ToBoolean(dataGridView.Rows[0].Cells[0].Value);
@@ -237,117 +240,148 @@ namespace Bob_o_extrator
 
         private void Executar_Extracao()
         {
-            if (extracting)
-            {
-                MessageBox.Show("Já existe uma extração em andamento, favor aguardar.", "Aguarde...", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                return;
-            }
 
-            string query;
-            string[] queryMulti;
-            Dictionary<string, string> querysLoop = new Dictionary<string, string>(); ;
-
-            if (cb_script_temporario.Checked)
-                query = File.ReadAllText(pathScriptTemporario);
-
-            else
-            {
-                if (!File.Exists(tb_scriptPath.Text))
+            try { 
+                if (Extracting)
                 {
-                    MessageBox.Show($"Script {tb_scriptPath.Text} não encontrado!", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Já existe uma extração em andamento, favor aguardar.", "Aguarde...", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     return;
                 }
-                query = File.ReadAllText(tb_scriptPath.Text);
-            }
 
-            //Bob o executor, pode execultar multiplas querys
-            queryMulti = Sql.SplitSql(query);
+                string query;
+                string[] queryMulti;
+                Dictionary<string, string> querysLoop = []; 
 
-            //Remove o ponto e vírgula do final se tiver
-            Sql.CleanQuery(ref query);
+                //Obter o sql do arquivo temporário
+                if (cb_script_temporario.Checked)
+                    query = File.ReadAllText(pathScriptTemporario);
 
-
-            if (cb_extracaoLoop.Checked)
-            {
-                ExecucaoEmLoopForm loopForm = new ExecucaoEmLoopForm(query);
-                loopForm.ShowDialog();
-                if (!loopForm.confirmado) return;
-                querysLoop = loopForm.querys;
-            }
-            else
-            {
-                //Exibe o formulario de parâmetros, caso hajam
-                ParametersForm parametersForm = new ParametersForm(query);
-                parametersForm.ShowDialog();
-                if (!parametersForm.confirmado) return;
-
-                query = parametersForm.query;
-            }
-
-
-            int count = 0;
-            foreach (DataGridViewRow row in dataGridView.Rows)
-            {
-                if (Convert.ToBoolean(row.Cells[0].Value))
+                //Obter o sql do arquivo temporário
+                else
                 {
-                    if (cb_extracaoLoop.Checked)
-                        count += querysLoop.Count;
-                    else
-                        count++;
+                    if (!File.Exists(tb_scriptPath.Text))
+                    {
+                        MessageBox.Show($"Script {tb_scriptPath.Text} não encontrado!", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    query = File.ReadAllText(tb_scriptPath.Text);
                 }
-            }
-                
 
-            Task[] tasks = new Task[count];
-            SetStatus("Executando, por favor aguarde...");
-            extracting = true;
+                //Bob o executor, pode execultar multiplas querys
+                queryMulti = Sql.SplitSql(query);
 
-            for (int i = 0, j = 0; i < dataGridView.Rows.Count; i++)
-            {
-                if (!Convert.ToBoolean(dataGridView.Rows[i].Cells[0].Value)) continue;
+                //Remove o ponto e vírgula do final se tiver
+                Sql.CleanQuery(ref query);
 
-                string serviceName = dataGridView.Rows[i].Cells[1].Value.ToString();
-                string user = dataGridView.Rows[i].Cells[2].Value.ToString();
-                string password = dataGridView.Rows[i].Cells[3].Value.ToString();
-                string session = dataGridView.Rows[i].Cells[4].Value.ToString();
-
+                //Mostra a tela para preencher os parâmetros da extração em loop
                 if (cb_extracaoLoop.Checked)
                 {
-                    foreach (var loop in querysLoop)
-                    {
-                        
-                        string path = tb_outputPath.Text + "\\" + dataGridView.Rows[i].Cells[5].Value.ToString() + loop.Key;
-                        tasks[j] = Task.Run(() => DataAcess.Export(serviceName, user, password, session, path, loop.Value));
-         
-                        j++;
-                    }
+                    ExecucaoEmLoopForm loopForm = new(query);
+                    loopForm.ShowDialog();
+                    if (!loopForm.confirmado) return;
+                    querysLoop = loopForm.querys;
                 }
                 else
                 {
+                    //Exibe o formulario de parâmetros, caso hajam
+                    ParametersForm parametersForm = new ParametersForm(query);
+                    parametersForm.ShowDialog();
+                    if (!parametersForm.confirmado) return;
 
-                    if (BobOExecutor)
+                    query = parametersForm.query;
+                }
+
+
+                int count = 0;
+                foreach (DataGridViewRow row in dataGridView.Rows)
+                {
+                    if (Convert.ToBoolean(row.Cells[0].Value))
                     {
-                        tasks[j] = Task.Run(() => DataAcess.Execute(serviceName, user, password, session, queryMulti));
+                        if (cb_extracaoLoop.Checked)
+                            count += querysLoop.Count;
+                        else
+                            count++;
                     }
-                    else
-                    {
-                        string path = tb_outputPath.Text + "\\" + dataGridView.Rows[i].Cells[5].Value.ToString();
-                        tasks[j] = Task.Run(() => DataAcess.Export(serviceName, user, password, session, path, query));
-                    }
-                    j++;
                 }
                 
 
+                Task[] tasks = new Task[count];
+                SetStatus("Executando, por favor aguarde...");
+                Extracting = true;
+
+                for (int i = 0, j = 0; i < dataGridView.Rows.Count; i++)
+                {
+                    if (!Convert.ToBoolean(dataGridView.Rows[i].Cells[0].Value)) continue;
+
+                    string serviceName = dataGridView.Rows[i].Cells[1].Value?.ToString();
+                    string user = dataGridView.Rows[i].Cells[2].Value?.ToString();
+                    string password = dataGridView.Rows[i].Cells[3].Value?.ToString();
+                    string session = dataGridView.Rows[i].Cells[4].Value?.ToString();
+                    string filename = dataGridView.Rows[i].Cells[5].Value?.ToString();
+                    
+                    ValidaCampos(serviceName, user, password, filename, i + 1);
+
+                    //Extração em loop
+                    if (cb_extracaoLoop.Checked)
+                    {
+                        foreach (var loop in querysLoop)
+                        {
+                        
+                            string path = tb_outputPath.Text + "\\" + filename + loop.Key;
+                            tasks[j] = Task.Run(() => DataAcess.Export(serviceName, user, password, session, path, loop.Value));
+         
+                            j++;
+                        }
+                    }
+                    //Extração normal
+                    else
+                    {
+
+                        //Executando scripts
+                        if (BobOExecutor)
+                        {
+                            tasks[j] = Task.Run(() => DataAcess.Execute(serviceName, user, password, session, queryMulti));
+                        }
+                        //Extraindo dados
+                        else
+                        {
+                            string path = tb_outputPath.Text + "\\" + filename;
+                            tasks[j] = Task.Run(() => DataAcess.Export(serviceName, user, password, session, path, query));
+                        }
+                        j++;
+                    }
+                }
+
+                Task.WaitAll(tasks);
+
+                MessageBox.Show("Extração Finalizada!", "Pronto!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                SetStatus("Pronto!");
+                Extracting = false;
             }
-
-            Task.WaitAll(tasks);
-
-            MessageBox.Show("Extração Finalizada!", "Pronto!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            SetStatus("Pronto!");
-            extracting = false;
+            catch(Exception ex)
+            {
+                Extracting = false;
+                MessageBox.Show(ex.Message, "Erro");
+            }
         }
 
 
+        private void ValidaCampos(string servicename, string user, string password, string filename, int linha)
+        {
+            if (string.IsNullOrEmpty(servicename))
+                throw new ValidationException($"Banco de dados não preenchido! (Linha {linha})");
+
+            if (string.IsNullOrEmpty(user))
+                throw new ValidationException($"Nome de usuário não preenchido! (Linha {linha})");
+   
+            if (string.IsNullOrEmpty(password))
+                throw new ValidationException($"Senha não preenchida! (Linha {linha})");
+
+            
+            if (string.IsNullOrEmpty(filename))
+                throw new ValidationException($"Nome do arquivo não preenchido! (Linha {linha})");
+
+        }
 
         //Método para alterar o status mesmo fora da thread principal
         private void SetStatus(string text)
