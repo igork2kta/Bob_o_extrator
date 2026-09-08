@@ -24,9 +24,9 @@ namespace Bob_o_extrator
             setLblHelp();
             showNovidades(true);
             ApagarScriptTemp();
-            Import(ConfigManager.LastImportPath);
-            tb_scriptPath.Text = ConfigManager.LastScriptPath;
-            tb_outputPath.Text = ConfigManager.LastOutputPath;
+            Import(Config.LastImportPath);
+            tb_scriptPath.Text = Config.LastScriptPath;
+            tb_outputPath.Text = Config.LastOutputPath;
             
         }
 
@@ -61,9 +61,9 @@ namespace Bob_o_extrator
             versaoAtual = string.Join(".", versaoAtual.Split('.').Take(2));
 
             string versaoArquivo = "";
-            if (!string.IsNullOrEmpty(ConfigManager.Versao))
+            if (!string.IsNullOrEmpty(Config.Versao))
             {
-                versaoArquivo = ConfigManager.Versao;
+                versaoArquivo = Config.Versao;
                 versaoArquivo = string.Join(".", versaoArquivo.Split('.').Take(2));
             }
 
@@ -115,8 +115,8 @@ namespace Bob_o_extrator
 
             dataGridView.Rows.Clear();
 
-            ConfigManager.LastImportPath = path;
-            ConfigManager.Save();
+            Config.LastImportPath = path;
+            Config.Save();
 
             bool executar;
             string banco, usuario, senha, schema, pathExtracao;
@@ -210,8 +210,8 @@ namespace Bob_o_extrator
         private void bt_scriptPath_Click(object sender, EventArgs e)
         {
             tb_scriptPath.Text = CsvClass.OpenFile();
-            ConfigManager.LastScriptPath = tb_scriptPath.Text;
-            ConfigManager.Save();
+            Config.LastScriptPath = tb_scriptPath.Text;
+            Config.Save();
         }
 
         private void bt_outputPath_Click(object sender, EventArgs e)
@@ -221,15 +221,15 @@ namespace Bob_o_extrator
             if (!string.IsNullOrEmpty(folderBrowserDialog.SelectedPath))
             {
                 tb_outputPath.Text = folderBrowserDialog.SelectedPath;
-                ConfigManager.LastOutputPath = tb_outputPath.Text;
-                ConfigManager.Save();
+                Config.LastOutputPath = tb_outputPath.Text;
+                Config.Save();
             }
         }
 
         private void tb_outputPath_TextChanged(object sender, EventArgs e)
         {
-            ConfigManager.LastOutputPath = tb_outputPath.Text;
-            ConfigManager.Save();
+            Config.LastOutputPath = tb_outputPath.Text;
+            Config.Save();
         }
 
         private async void bt_executar_Click(object sender, EventArgs e)

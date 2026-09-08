@@ -44,15 +44,21 @@ namespace Bob_o_extrator
 
             if (args.Length > 0)
             {
-            
+
                 //BANCO, USUARIO, SENHA, SESSION, PATH, PATH QUERY
+                if (args.Length < 6)
+                {
+                    Console.WriteLine("Número de parâmetros incorreto.");
+                    return;
+                }
                 string query = File.ReadAllText(args[5]);
+
 
                 DataAcess.Export(args[0], args[1], args[2], args[3], args[4], query);
             }
             else
             {
-                ConfigManager.Load();
+                Config.Load();
                 Application.Run(new MainForm());
             }
                

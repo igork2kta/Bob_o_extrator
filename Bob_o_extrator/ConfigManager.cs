@@ -1,68 +1,79 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Bob_o_extrator
 {
-    public class Config
-    {
-        public string LastImportPath { get; set; }
-        public string LastScriptPath { get; set; }
-        public string LastOutputPath { get; set; }
-        public string Versao { get; set; }
-    }
 
-    public static class ConfigManager
+    public static class Config
     {
+        public static readonly string PathArquivoTemporario = @"C:\Temp\TaxZone";
+
+        // Propriedades salvas no JSON
         public static string LastImportPath { get; set; }
         public static string LastScriptPath { get; set; }
         public static string LastOutputPath { get; set; }
         public static string Versao { get; set; }
 
+        // Propriedade mantida só em memória (ignorada pelo atributo [JsonIgnore])
+        [JsonIgnore]
+        public static string Cookie { get; set; }
 
-        private static string configFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), GetAppName(), "config.json");
+        private static string GetAppFolder() =>
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Assembly.GetExecutingAssembly().GetName().Name);
 
-        private static string GetAppName()
-        {
-            return Assembly.GetExecutingAssembly().GetName().Name;
-        }
+        private static string GetFilePath() =>
+            Path.Combine(GetAppFolder(), "config.json");
 
         public static void Load()
         {
-            if (File.Exists(configFilePath))
-            {
-                string json = File.ReadAllText(configFilePath);
-                var config = JsonSerializer.Deserialize<Config>(json);
+            string filePath = GetFilePath();
+            if (!File.Exists(filePath)) return;
 
-                if (config != null)
+            string json = File.ReadAllText(filePath);
+            var dict = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(json);
+            if (dict == null) return;
+
+            // Preenche automaticamente as propriedades estáticas com base no JSON
+            foreach (var prop in typeof(Config).GetProperties(BindingFlags.Public | BindingFlags.Static))
+            {
+                if (!prop.CanWrite || prop.GetCustomAttribute<JsonIgnoreAttribute>() != null) continue;
+
+                if (dict.TryGetValue(prop.Name, out var element))
                 {
-                    LastImportPath = config.LastImportPath;
-                    LastScriptPath = config.LastScriptPath;
-                    LastOutputPath = config.LastOutputPath;
-                    Versao = config.Versao;
+                    var value = JsonSerializer.Deserialize(element.GetRawText(), prop.PropertyType);
+                    prop.SetValue(null, value);
                 }
             }
         }
 
         public static void Save()
         {
-            Versao = Assembly.GetEntryAssembly().GetName().Version.ToString();
-            var config = new Config
-            {
-                LastImportPath = LastImportPath,
-                LastScriptPath = LastScriptPath,
-                LastOutputPath = LastOutputPath,
-                Versao = Versao
-            };
+            Versao = Assembly.GetEntryAssembly()?.GetName().Version?.ToString();
 
-            if(!Directory.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), GetAppName())))
+            // Monta um dicionário com os valores das propriedades estáticas
+            var dict = new Dictionary<string, object>();
+            foreach (var prop in typeof(Config).GetProperties(BindingFlags.Public | BindingFlags.Static))
             {
-                Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), GetAppName()));
+                if (prop.GetCustomAttribute<JsonIgnoreAttribute>() != null) continue;
+
+                dict[prop.Name] = prop.GetValue(null);
             }
-            string json = JsonSerializer.Serialize(config, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(configFilePath, json);
+
+            string directory = GetAppFolder();
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            string json = JsonSerializer.Serialize(dict, options);
+            File.WriteAllText(GetFilePath(), json);
         }
     }
+
 }

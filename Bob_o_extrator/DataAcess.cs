@@ -26,7 +26,7 @@ namespace Bob_o_extrator
                 $"Base: {serviceName}\n" +
                 $"Session: {session}\n" +
                 $"Usuário: {user}\n" +
-                $"Senha: {password}\n" +
+                //$"Senha: {password}\n" +
                 $"Path: {path}\n");
 
             // Construir a string de conexão usando OracleConnectionStringBuilder

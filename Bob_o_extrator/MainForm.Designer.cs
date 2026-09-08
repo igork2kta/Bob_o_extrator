@@ -105,7 +105,6 @@
             dataGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnEnter;
             dataGridView.Location = new System.Drawing.Point(12, 53);
             dataGridView.Name = "dataGridView";
-            dataGridView.RowTemplate.Height = 25;
             dataGridView.Size = new System.Drawing.Size(943, 306);
             dataGridView.TabIndex = 4;
             dataGridView.CellEnter += dataGridView_CellEnter;
@@ -251,7 +250,7 @@
             // lbl_help
             // 
             lbl_help.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
-            lbl_help.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            lbl_help.Font = new System.Drawing.Font("Segoe UI", 10F);
             lbl_help.Image = Properties.Resources.HelpTableOfContents;
             lbl_help.Location = new System.Drawing.Point(945, 3);
             lbl_help.Name = "lbl_help";
@@ -293,9 +292,9 @@
             // 
             cb_script_temporario.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
             cb_script_temporario.AutoSize = true;
-            cb_script_temporario.Location = new System.Drawing.Point(594, 438);
+            cb_script_temporario.Location = new System.Drawing.Point(593, 438);
             cb_script_temporario.Name = "cb_script_temporario";
-            cb_script_temporario.Size = new System.Drawing.Size(119, 19);
+            cb_script_temporario.Size = new System.Drawing.Size(120, 19);
             cb_script_temporario.TabIndex = 25;
             cb_script_temporario.Text = "Script Temporário";
             cb_script_temporario.UseVisualStyleBackColor = true;
@@ -343,7 +342,7 @@
             cb_extracaoLoop.AutoSize = true;
             cb_extracaoLoop.Location = new System.Drawing.Point(467, 438);
             cb_extracaoLoop.Name = "cb_extracaoLoop";
-            cb_extracaoLoop.Size = new System.Drawing.Size(121, 19);
+            cb_extracaoLoop.Size = new System.Drawing.Size(120, 19);
             cb_extracaoLoop.TabIndex = 30;
             cb_extracaoLoop.Text = "Extração em Loop";
             cb_extracaoLoop.UseVisualStyleBackColor = true;
